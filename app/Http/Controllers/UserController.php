@@ -11,8 +11,8 @@ class UserController extends Controller
 {
     public function register(UserRequest $request)
     {
-        $validated = $request->validated();
-        User::create($validated);
+        // $validated = $request->validated();
+        User::create($request->validated());
 
         return response()->json([
             'status' => true,
@@ -32,29 +32,25 @@ class UserController extends Controller
         if (!$user) {
             return response()->json([
                 'status' => false,
-                'message' => 'Email Incorrect !'
+                'message' => 'Invalid Email or Password !'
             ]);
         }
 
         if (!Hash::check($request->input('password'), $user->password)) {
             return response()->json([
                 'status' => false,
-                'message' => 'Invalid Credentielse !'
+                'message' => 'Invalid Email or Password !'
             ]);
         }
 
-        // HADA DYAL VERIFICATION EMAIL MAGHADIX NAHTAJO DABA 
-        // if (!$user->email_verified_at) {
-        //     return response()->json([
-        //         'status' => false,
-        //         'message' => 'Pleas Verify Your Email !'
-        //     ]);
-        // }
+        $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'status' => true,
             'message' => 'User Login Successfuly !',
-            'data' => $user
+            'data' => $user,
+            'token' => $token
         ]);
     }
+
 }
